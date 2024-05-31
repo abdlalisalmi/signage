@@ -80,7 +80,7 @@ class Content(models.Model):
         help_text='If the type is "text", please provide the text content.',
     )
     duration = models.PositiveIntegerField(
-        default=5,
+        default=30,
         validators=[MinValueValidator(3)],
         verbose_name="Duration (in seconds)",
         help_text="Specify the duration of the content in seconds.",
@@ -89,8 +89,20 @@ class Content(models.Model):
     is_active = models.BooleanField(
         default=True,
         verbose_name="Is Active",
-        help_text="Specify if the content is active or not.",
+        help_text="If the content is not active, it will not be displayed on the screens.",
     )
+
+    starts_at = models.DateTimeField(
+        verbose_name="Starts At",
+        help_text="Specify the start date and time for the content. If not specified, the content will be displayed immediately.",
+    )
+    ends_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name="Ends At",
+        help_text="Specify the end date and time for the content. If not specified, the content will be displayed indefinitely.",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

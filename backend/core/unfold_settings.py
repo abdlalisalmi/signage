@@ -8,7 +8,7 @@ def has_permission(request, app_label, model_name):
 
 
 UNFOLD = {
-    "SITE_TITLE": "Supervisor",
+    "SITE_TITLE": "Signage",
     "SITE_HEADER": "Signage",
     "SITE_URL": "/",
     # "SITE_ICON": lambda request: "https://res.cloudinary.com/djr3obtg6/image/upload/v1710331091/logo_avd7to.png",
@@ -63,6 +63,20 @@ UNFOLD = {
                         "link": reverse_lazy("admin:auth_group_changelist"),
                         "permission": lambda request: has_permission(
                             request, "authentication", "group"
+                        ),
+                    },
+                ],
+            },
+            {
+                "title": _("Monitoring"),
+                "separator": True,  # Top border
+                "items": [
+                    {
+                        "title": _("Logs"),
+                        "icon": "monitor_heart",
+                        "link": reverse_lazy("admin:admin_logentry_changelist"),
+                        "permission": lambda request: has_permission(
+                            request, "admin", "logentry"
                         ),
                     },
                 ],
