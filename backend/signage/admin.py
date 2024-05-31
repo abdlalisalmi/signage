@@ -4,8 +4,9 @@ from django.contrib import admin
 from django.contrib.admin.models import LogEntry
 from django.http import HttpRequest
 from django.utils import timezone
+from django.shortcuts import redirect
 from unfold.admin import ModelAdmin
-from unfold.decorators import display
+from unfold.decorators import display, action
 from unfold.contrib.forms.widgets import WysiwygWidget
 from unfold.contrib.filters.admin import (
     RangeDateFilter,
@@ -151,7 +152,6 @@ class ScreenAdminClass(ModelAdmin):
 
 @admin.register(Playlist)
 class PlaylistAdminClass(ModelAdmin):
-
     readonly_fields = ["created_at", "updated_at"]
     list_display = [
         "display_name",
@@ -190,17 +190,23 @@ class PlaylistAdminClass(ModelAdmin):
 @admin.register(Content)
 class ContentAdminClass(ModelAdmin):
     form = ContentAdminForm
+    change_form_template = "admin/signage/content_change_form.html"
+
+    # actions_row = ["content_preview"]
+    # actions_submit_line = ["content_preview"]
     readonly_fields = ["created_at", "updated_at"]
     list_display = [
         "display_name",
         "type",
         "display_duration",
+        "display_playlists",
         "starts_at",
         "ends_at",
         "display_status",
     ]
     list_filter = ["type"]
     search_fields = ["name"]
+    filter_horizontal = ["playlists"]
 
     formfield_overrides = {
         models.TextField: {
@@ -221,6 +227,7 @@ class ContentAdminClass(ModelAdmin):
             "Content Display Time",
             {"fields": ("duration", "starts_at", "ends_at", "is_active")},
         ),
+        ("Playlists to display on", {"fields": ("playlists",)}),
         ("Important dates", {"fields": (("created_at", "updated_at"),)}),
     )
 
@@ -232,6 +239,22 @@ class ContentAdminClass(ModelAdmin):
     @display(description="Duration")
     def display_duration(self, obj):
         return f"{obj.duration} seconds"
+
+    @display(description="Playlists")
+    def display_playlists(self, obj):
+        playlists = obj.playlists.filter(is_active=True)
+        if playlists.count() == 0:
+            return "-"
+        return ", ".join(
+            [
+                (
+                    playlist.name.capitalize()
+                    if len(playlist.name) < 20
+                    else playlist.name.capitalize()[0:20] + "..."
+                )
+                for playlist in playlists
+            ]
+        )
 
     @display(
         description="Status",
@@ -251,3 +274,13 @@ class ContentAdminClass(ModelAdmin):
         elif obj.ends_at and obj.ends_at < timezone.now():
             return "Expired"
         return "Active"
+
+    # @action(description="Preview", attrs={"target": "_blank"})
+    # def content_preview(self, request: HttpRequest, obj: Content):
+    #     return redirect(f"https://example.com/{obj.id}")
+
+    # actions_detail = ["content_preview"]
+
+    # @action(description="Preview", attrs={"target": "_blank"})
+    # def content_preview(self, request: HttpRequest, object_id: int):
+    #     return redirect(f"https://example.com/{object_id}")

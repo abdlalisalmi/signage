@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models.functions import Lower
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 class Screen(models.Model):
@@ -137,14 +139,28 @@ class Content(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = "content"
-        ordering = ["-id"]
-        verbose_name = "Content"
-        verbose_name_plural = "Contents"
+    # Check for the required fields based on the content type
+    def clean(self):
+        super().clean()
+        if self.type == "image" or self.type == "video":
+            if not self.file:
+                raise ValidationError(
+                    {
+                        "file": _(
+                            "Image/Video file is required for image/video content type."
+                        )
+                    }
+                )
+        elif self.type == "text":
+            if not self.text:
+                raise ValidationError(
+                    {"text": _("Text content is required for text content type.")}
+                )
+        elif self.type == "embed":
+            if not self.url:
+                raise ValidationError(
+                    {"url": _("Embed URL is required for embed content type.")}
+                )
 
     # delete the file when the object is deleted
     def delete(self, *args, **kwargs):
@@ -154,3 +170,12 @@ class Content(models.Model):
         except Exception:
             pass
         super(Content, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = "content"
+        ordering = ["-id"]
+        verbose_name = "Content"
+        verbose_name_plural = "Contents"
