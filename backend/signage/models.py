@@ -1,40 +1,62 @@
 from django.db import models
+from django.db.models.functions import Lower
 from django.core.validators import MinValueValidator
 
 
 class Screen(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    is_active = models.BooleanField(default=True)
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name="Screen Name",
+        help_text="Unique name for the screen to identify it.",
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Description",
+        help_text="Description of the screen to provide more information.",
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Is Active",
+        help_text="If the screen is not active, it will not be displayed.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # playlists
-    playlists = models.ManyToManyField("Playlist", related_name="screens", blank=True)
-
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        self.slug = self.name.strip().replace(" ", "-").lower()
-        super(Screen, self).save(*args, **kwargs)
 
     class Meta:
         db_table = "screen"
         ordering = ["-id"]
         verbose_name = "Screen"
         verbose_name_plural = "Screens"
+        constraints = [
+            models.UniqueConstraint(
+                Lower("name"),
+                name="unique screen name",
+            )
+        ]
 
 
 class Playlist(models.Model):
-    name = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name="Playlist Name",
+        help_text="Unique name for the playlist to identify it.",
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Is Active",
+        help_text="If the playlist is not active, it will not be displayed on the screens.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # contents
-    contents = models.ManyToManyField("Content", related_name="playlists", blank=True)
+    # Screens
+    screens = models.ManyToManyField("Screen", related_name="playlists", blank=True)
 
     def __str__(self):
         return self.name
@@ -44,6 +66,12 @@ class Playlist(models.Model):
         ordering = ["-id"]
         verbose_name = "Playlist"
         verbose_name_plural = "Playlists"
+        constraints = [
+            models.UniqueConstraint(
+                Lower("name"),
+                name="unique playlist name",
+            )
+        ]
 
 
 class Content(models.Model):
@@ -54,6 +82,9 @@ class Content(models.Model):
         ("text", "Text"),
         ("embed", "Embed"),
     )
+
+    # Playlists
+    playlists = models.ManyToManyField("Playlist", related_name="contents", blank=True)
 
     name = models.CharField(max_length=255, verbose_name="Content Name")
     type = models.CharField(
@@ -114,3 +145,12 @@ class Content(models.Model):
         ordering = ["-id"]
         verbose_name = "Content"
         verbose_name_plural = "Contents"
+
+    # delete the file when the object is deleted
+    def delete(self, *args, **kwargs):
+        try:
+            if self.type in ["image", "video"] and self.file:
+                self.file.delete()
+        except Exception:
+            pass
+        super(Content, self).delete(*args, **kwargs)

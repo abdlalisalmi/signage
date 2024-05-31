@@ -15,146 +15,6 @@ from unfold.contrib.filters.admin import (
 from .models import Screen, Playlist, Content
 
 
-class ContentAdminForm(forms.ModelForm):
-    class Meta:
-        model = Content
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if (
-            not self.instance.pk
-        ):  # Only set the initial value when creating a new instance
-            self.fields["starts_at"].initial = timezone.now()
-
-
-@admin.register(Screen)
-class ScreenAdminClass(ModelAdmin):
-
-    readonly_fields = ["slug", "created_at", "updated_at"]
-    list_display = [
-        "display_name",
-        "display_playlists",
-        "is_active",
-        "created_at",
-        "updated_at",
-    ]
-    list_filter = ["is_active"]
-    search_fields = ["name"]
-
-    fieldsets = (
-        (None, {"fields": ("name", "description", "is_active")}),
-        ("Playlists", {"fields": ("playlists",)}),
-        ("Timestamps", {"fields": ("created_at", "updated_at")}),
-    )
-    filter_horizontal = ["playlists"]
-
-    @admin.display(description="Screen name")
-    def display_name(self, obj):
-        return obj.name.capitalize()
-
-    @admin.display(description="Playlists")
-    def display_playlists(self, obj):
-        playlists = obj.playlists.filter(is_active=True)
-        if playlists.count() == 0:
-            return "No playlists"
-        return ", ".join([playlist.name.capitalize() for playlist in playlists])
-
-
-@admin.register(Playlist)
-class PlaylistAdminClass(ModelAdmin):
-
-    readonly_fields = ["created_at", "updated_at"]
-    list_display = [
-        "display_name",
-        "display_contents",
-        "is_active",
-        "created_at",
-        "updated_at",
-    ]
-    list_filter = ["is_active"]
-    search_fields = ["name"]
-    filter_horizontal = ["contents"]
-
-    fieldsets = (
-        (None, {"fields": ("name", "is_active")}),
-        ("Contents", {"fields": ("contents",)}),
-        ("Timestamps", {"fields": ("created_at", "updated_at")}),
-    )
-
-    @admin.display(description="Playlist name")
-    def display_name(self, obj):
-        return obj.name.capitalize()
-
-    @admin.display(description="Contents")
-    def display_contents(self, obj):
-        contents = obj.contents.filter(is_active=True)
-        if contents.count() == 0:
-            return "No contents"
-        return f"{contents.count()} contents"
-
-
-@admin.register(Content)
-class ContentAdminClass(ModelAdmin):
-    form = ContentAdminForm
-    readonly_fields = ["created_at", "updated_at"]
-    list_display = [
-        "display_name",
-        "type",
-        "display_status",
-        "starts_at",
-        "ends_at",
-    ]
-    list_filter = ["type"]
-    search_fields = ["name"]
-
-    formfield_overrides = {
-        models.TextField: {
-            "widget": WysiwygWidget,
-        }
-    }
-
-    fieldsets = (
-        (
-            None,
-            {"fields": (("name", "type"),)},
-        ),
-        (
-            "Content (Fill one of the following)",
-            {"fields": ("url", "file", "text")},
-        ),
-        (
-            "Content Display Time",
-            {"fields": ("duration", "starts_at", "ends_at", "is_active")},
-        ),
-        ("Important dates", {"fields": ("created_at", "updated_at")}),
-    )
-
-    @display(description="Content name")
-    def display_name(self, obj):
-        name = obj.name.capitalize()
-        return name[:30] + "..." if len(name) > 30 else name
-
-    @display(
-        description="Status",
-        label={
-            "Scheduled": "info",
-            "Active": "success",
-            "Inactive": "danger",
-            "Expired": "danger",
-        },
-    )
-    def display_status(self, obj):
-        if not obj.is_active:
-            return "Inactive"
-
-        if obj.starts_at > timezone.now():
-            return "Scheduled"
-        elif obj.ends_at and obj.ends_at < timezone.now():
-            return "Expired"
-        return "Active"
-
-
 @admin.register(LogEntry)
 class LogEntryAdmin(admin.ModelAdmin):
     def has_add_permission(self, request: HttpRequest) -> bool:
@@ -227,3 +87,167 @@ class LogEntryAdmin(admin.ModelAdmin):
     def display_change_message(self, obj):
         st = str(obj.change_message)
         return st[:30] + "..." if len(st) > 30 else st
+
+
+class ContentAdminForm(forms.ModelForm):
+    class Meta:
+        model = Content
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if (
+            not self.instance.pk
+        ):  # Only set the initial value when creating a new instance
+            self.fields["starts_at"].initial = timezone.now()
+
+
+@admin.register(Screen)
+class ScreenAdminClass(ModelAdmin):
+
+    readonly_fields = ["created_at", "updated_at"]
+    list_display = [
+        "display_name",
+        "display_playlists",
+        "created_at",
+        "updated_at",
+        "display_status",
+    ]
+    list_filter = ["is_active"]
+    search_fields = ["name"]
+
+    fieldsets = (
+        (None, {"fields": ("name", "description", "is_active")}),
+        (
+            "Important dates",
+            {"fields": (("created_at", "updated_at"),)},
+        ),
+    )
+
+    @display(description="Screen name")
+    def display_name(self, obj):
+        return obj.name.capitalize()
+
+    @display(description="Status", label={"Active": "success", "Inactive": "danger"})
+    def display_status(self, obj):
+        return "Active" if obj.is_active else "Inactive"
+
+    @display(description="Playlists")
+    def display_playlists(self, obj):
+        playlists = obj.playlists.filter(is_active=True)
+        if playlists.count() == 0:
+            return "No playlists assigned"
+        return ", ".join(
+            [
+                (
+                    playlist.name.capitalize()
+                    if len(playlist.name) < 20
+                    else playlist.name.capitalize()[0:20] + "..."
+                )
+                for playlist in playlists
+            ]
+        )
+
+
+@admin.register(Playlist)
+class PlaylistAdminClass(ModelAdmin):
+
+    readonly_fields = ["created_at", "updated_at"]
+    list_display = [
+        "display_name",
+        "display_contents",
+        "created_at",
+        "updated_at",
+        "display_status",
+    ]
+    list_filter = ["is_active"]
+    search_fields = ["name"]
+    filter_horizontal = ["screens"]
+
+    fieldsets = (
+        (None, {"fields": ("name", "is_active")}),
+        ("Screens to display on", {"fields": ("screens",)}),
+        ("Important dates", {"fields": (("created_at", "updated_at"),)}),
+    )
+
+    @display(description="Playlist name")
+    def display_name(self, obj):
+        return obj.name.capitalize()
+
+    @display(description="Status", label={"Active": "success", "Inactive": "danger"})
+    def display_status(self, obj):
+        return "Active" if obj.is_active else "Inactive"
+
+    @display(description="Contents")
+    def display_contents(self, obj):
+        contents = obj.contents.filter(is_active=True)
+        if contents.count() == 0:
+            return "No contents assigned"
+        count = contents.count()
+        return f"{count} " + ("contents" if count > 1 else "content")
+
+
+@admin.register(Content)
+class ContentAdminClass(ModelAdmin):
+    form = ContentAdminForm
+    readonly_fields = ["created_at", "updated_at"]
+    list_display = [
+        "display_name",
+        "type",
+        "display_duration",
+        "starts_at",
+        "ends_at",
+        "display_status",
+    ]
+    list_filter = ["type"]
+    search_fields = ["name"]
+
+    formfield_overrides = {
+        models.TextField: {
+            "widget": WysiwygWidget,
+        }
+    }
+
+    fieldsets = (
+        (
+            None,
+            {"fields": (("name", "type"),)},
+        ),
+        (
+            "Content (Fill one of the following)",
+            {"fields": ("url", "file", "text")},
+        ),
+        (
+            "Content Display Time",
+            {"fields": ("duration", "starts_at", "ends_at", "is_active")},
+        ),
+        ("Important dates", {"fields": (("created_at", "updated_at"),)}),
+    )
+
+    @display(description="Content name")
+    def display_name(self, obj):
+        name = obj.name.capitalize()
+        return name[:30] + "..." if len(name) > 30 else name
+
+    @display(description="Duration")
+    def display_duration(self, obj):
+        return f"{obj.duration} seconds"
+
+    @display(
+        description="Status",
+        label={
+            "Scheduled": "info",
+            "Active": "success",
+            "Inactive": "danger",
+            "Expired": "danger",
+        },
+    )
+    def display_status(self, obj):
+        if not obj.is_active:
+            return "Inactive"
+
+        if obj.starts_at > timezone.now():
+            return "Scheduled"
+        elif obj.ends_at and obj.ends_at < timezone.now():
+            return "Expired"
+        return "Active"
