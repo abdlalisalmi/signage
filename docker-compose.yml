@@ -13,6 +13,7 @@ services:
           - ./deployment/nginx:/etc/nginx/conf.d
           - /etc/ssl:/etc/ssl
           - ./backend/static:/home/backend/static/
+          - ./backend/media:/home/backend/media/
         depends_on:
           - frontend
           - backend
