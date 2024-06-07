@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from .unfold_settings import UNFOLD
@@ -9,17 +10,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-j^8kz!$em3-2h3mn)ln3hh7#=csj=$uhx360l_-g-zj7vkpsm%"
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 
-ALLOWED_HOSTS = ["*"]
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-#(7!")
+
+# Allowed hosts
+ALLOWED_HOSTS = [
+    host.strip(" ") for host in os.environ.get("ALLOWED_HOSTS", "*").split(",")
+]
 
 # Cors headers
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF settings
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    CSRF_TRUSTED_ORIGINS = [
+        origin.strip(" ")
+        for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    ]
 
 
 # Application definition
