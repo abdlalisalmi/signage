@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import CustomLoader from "@/components/CustomLoader";
 import ImagePlayer from "./ImagePlayer";
-import VideoPlayer from "./videoPlayer";
-import EmbedPlayer from "./embedPlayer";
+import VideoPlayer from "./VideoPlayer";
+import EmbedPlayer from "./EmbedPlayer";
 import TextPlayer from "./TextPlayer";
 
 export default function ContentsPlayer({ initialContents }) {
