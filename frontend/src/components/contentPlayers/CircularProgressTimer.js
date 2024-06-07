@@ -46,13 +46,13 @@ export default function CircularProgressTimer({
           cx="50"
           cy="50"
           r="45"
-          className="stroke-gray-300 fill-none stroke-[5]"
+          className="stroke-gray-100 fill-none stroke-[5]"
         />
         <circle
           cx="50"
           cy="50"
           r="45"
-          className="progress stroke-blue-500 fill-none stroke-[5]"
+          className="progress stroke-sky-400 fill-none stroke-[5]"
           style={{
             strokeDasharray: FULL_DASH_ARRAY,
             strokeDashoffset: FULL_DASH_ARRAY - offset,

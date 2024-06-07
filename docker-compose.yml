@@ -1,0 +1,75 @@
+version: '2'
+
+services:
+
+    nginx: 
+        container_name: "signage_nginx"
+        restart: unless-stopped
+        image: nginx:1.23.3
+        ports:
+          - 80:80
+          - 443:443
+        volumes:
+          - ./deployment/nginx:/etc/nginx/conf.d
+          - /etc/ssl:/etc/ssl
+          - ./backend/static:/home/backend/static/
+        depends_on:
+          - frontend
+          - backend
+        networks:
+          - front-network
+    
+    frontend: 
+        restart: unless-stopped
+        container_name: "signage_frontend"
+        build: 
+            context: .
+            dockerfile: ./deployment/frontend/Dockerfile
+        ports:
+            - 3000
+        depends_on:
+            - backend
+        links:
+            - backend
+        networks:
+            - front-network
+
+    backend:
+        restart: unless-stopped
+        container_name: "signage_backend"
+        build:
+            context: .
+            dockerfile: ./deployment/backend/Dockerfile
+        entrypoint: sh /app/entrypoint.sh
+        volumes:
+            - ./backend:/app
+            - ./deployment/backend/entrypoint.sh:/app/entrypoint.sh
+            - /var/log/signage:/var/log/signage # for logging
+        env_file:
+            - ./deployment/.env
+        ports:
+            - 8000
+        depends_on:
+            - database
+        networks:
+            - front-network
+            - back-network
+    
+    database:
+        restart: unless-stopped
+        container_name: "signage_db"
+        image: postgres:12.10
+        volumes:
+            - database:/var/lib/postgresql/data
+        env_file:
+            - ./deployment/.env
+        networks:
+            - back-network
+
+volumes:
+    database: {}
+    nginx-logging: {}
+
+networks:
+    front-network:
+    back-network:

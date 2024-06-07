@@ -23,14 +23,8 @@ export default function ScreenPlay({ params }) {
         withCredentials: true,
       });
       setScreenData(res.data);
-      if (res.data.playlists) {
-        let conts = [];
-        res.data.playlists.map((playlist) => {
-          conts = [...conts, ...playlist.contents];
-        });
-        conts = removeDuplicates(conts, "id");
-        setContents(conts);
-      }
+      setContents(res.data.contents);
+      console.log(res.data);
     } catch (error) {
       setError(error);
     }

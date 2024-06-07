@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { PiScreencastFill } from "react-icons/pi";
 import CircularProgressTimer from "./CircularProgressTimer";
+import { FiAirplay } from "react-icons/fi";
 
 export default function EmptyContents() {
   const callback = () => {
@@ -13,7 +12,7 @@ export default function EmptyContents() {
       <section className="w-full h-full">
         <div className="flex flex-col items-center justify-center h-full">
           <div className="text-4xl text-gray-400">
-            <PiScreencastFill />
+            <FiAirplay className="w-6 h-6 text-gray-600 mb-2" />
           </div>
           <div className="text-sm text-gray-400">No content available</div>
         </div>
