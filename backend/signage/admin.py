@@ -2,18 +2,92 @@ from django.db import models
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.admin import UserAdmin
 from django.http import HttpRequest
 from django.utils import timezone
-from django.shortcuts import redirect
 from unfold.admin import ModelAdmin
-from unfold.decorators import display, action
+from unfold.decorators import display
 from unfold.contrib.forms.widgets import WysiwygWidget
 from unfold.contrib.filters.admin import (
     RangeDateFilter,
 )
-
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from .models import Screen, Playlist, Content
+
+
+admin.site.unregister(User)
+admin.site.unregister(Group)
+
+
+@admin.register(User)
+class UserAdmin(UserAdmin, ModelAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
+
+    list_display = [
+        "display_header",
+        "display_groups",
+        "is_active",
+        "is_superuser",
+        "is_staff",
+        "date_joined",
+    ]
+    search_fields = ["username", "email", "first_name", "last_name"]
+    list_per_page = 30
+    list_select_related = True
+    # save_as = True
+    # save_on_top = True
+    list_filter = ["is_staff", "is_superuser", "is_active"]
+    list_filter_submit = True
+    preserve_filters = False
+    # inlines = None
+    readonly_fields = ["last_login", "date_joined"]
+
+    @display(description="User", header=True)
+    def display_header(self, instance: User):
+        first_name = instance.first_name.capitalize() if instance.first_name else "."
+        last_name = instance.last_name.upper() if instance.last_name else "."
+        initials = f"{first_name[0].upper()}{last_name[0].upper()}"
+        return (
+            f"{first_name} {last_name}",
+            instance.username,
+            initials,
+        )
+
+    @display(description="Groups")
+    def display_groups(self, instance: User):
+        groups = ", ".join([group.name for group in instance.groups.all()])
+        return groups if groups else "-"
+
+
+@admin.register(Group)
+class GroupAdmin(ModelAdmin):
+    list_display = ["name", "display_users", "display_permissions"]
+    search_fields = ["name"]
+    list_per_page = 30
+    list_select_related = True
+    # save_as = True
+    # save_on_top = True
+    list_filter = []
+    list_filter_submit = True
+    preserve_filters = False
+    filter_horizontal = ["permissions"]
+    # inlines = None
+
+    @display(description="Users")
+    def display_users(self, instance: Group):
+        users_count = instance.user_set.count()
+        return f"{users_count} " + ("users" if users_count > 1 else "user")
+
+    @display(description="Permissions")
+    def display_permissions(self, instance: Group):
+        permissions_count = instance.permissions.count()
+        return f"{permissions_count} " + (
+            "permissions" if permissions_count > 1 else "permission"
+        )
 
 
 @admin.register(LogEntry)
@@ -190,7 +264,7 @@ class PlaylistAdminClass(ModelAdmin):
 @admin.register(Content)
 class ContentAdminClass(ModelAdmin):
     form = ContentAdminForm
-    change_form_template = "admin/signage/content_change_form.html"
+    change_form_template = "signage/admin/content_change_form.html"
 
     # actions_row = ["content_preview"]
     # actions_submit_line = ["content_preview"]

@@ -41,7 +41,7 @@ UNFOLD = {
                         "title": _("Dashboard"),
                         "icon": "dashboard",  # Supported icon set: https://fonts.google.com/icons
                         "link": reverse_lazy("admin:index"),
-                        "permission": lambda request: request.user.is_superuser,
+                        "permission": lambda request: request.user.is_staff,
                     },
                 ],
             },
@@ -54,7 +54,7 @@ UNFOLD = {
                         "icon": "person",
                         "link": reverse_lazy("admin:auth_user_changelist"),
                         "permission": lambda request: has_permission(
-                            request, "authentication", "user"
+                            request, "auth", "user"
                         ),
                     },
                     {
@@ -62,7 +62,7 @@ UNFOLD = {
                         "icon": "group",
                         "link": reverse_lazy("admin:auth_group_changelist"),
                         "permission": lambda request: has_permission(
-                            request, "authentication", "group"
+                            request, "auth", "group"
                         ),
                     },
                 ],
