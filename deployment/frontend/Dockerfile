@@ -13,7 +13,7 @@ ADD ./frontend .
 
 # Set environment variables
 RUN echo "NEXT_PUBLIC_API_URL=/api/v1" > .env
-RUN echo "NEXT_PUBLIC_MEDIA_URL=/" >> .env
+RUN echo "NEXT_PUBLIC_MEDIA_URL=" >> .env
 
 # Build the application using npm
 RUN npm run build
