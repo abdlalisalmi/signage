@@ -35,7 +35,7 @@ done
 	# Workers: 4 cores * 2 workers per core = 8 workers
 	# Threads: Start with 2 threads per worker
 
-until gunicorn core.wsgi --bind 0.0.0.0:8000 --workers 4 --threads 2 --timeout 60 --access-logfile '/var/log/supervisor/access.log' --error-logfile '/var/log/supervisor/error.log'
+until gunicorn core.wsgi --bind 0.0.0.0:8000 --workers 4 --threads 2 --timeout 60 --access-logfile '/var/log/signage/access.log' --error-logfile '/var/log/signage/error.log'
 do
 	echo "Waiting for server..."
 	sleep 2
