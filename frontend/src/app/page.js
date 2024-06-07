@@ -44,7 +44,7 @@ export default function Home() {
       <section className="w-full p-6 relative mb-28">
         <div className="w-full flex flex-col items-center justify-center p-8 min-h-[350px] rounded-3xl shadow-lg bg-[url('/img/hero-bg.png')] bg-center bg-cover bg-no-repeat">
           <h2 className="text-[45px] text-sky-500 text-center font-[500]">
-            What's New on Campus
+            What&apos;s New on Campus
           </h2>
           <p className="text-[16px] text-gray-700 text-center">
             Stay informed and inspired with the latest news and announcements

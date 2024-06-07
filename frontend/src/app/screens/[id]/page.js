@@ -2,9 +2,6 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { PiScreencastFill } from "react-icons/pi";
-import Image from "next/image";
-import { getMediaAbsolutePath, removeDuplicates } from "@/utils";
 import Layout from "@/components/Layout";
 import ContentsPlayer from "@/components/contentPlayers/ContentsPlayer";
 import EmptyContents from "@/components/contentPlayers/EmptyContents";
