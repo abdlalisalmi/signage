@@ -5,7 +5,9 @@ const getMediaAbsolutePath = (mediaPath) => {
     case mediaPath.startsWith("http"):
       return mediaPath;
     default:
-      return `${process.env.NEXT_PUBLIC_MEDIA_URL}${mediaPath}`;
+      if (process.env.NEXT_PUBLIC_MEDIA_URL)
+        return `${process.env.NEXT_PUBLIC_MEDIA_URL}${mediaPath}`;
+      return mediaPath;
   }
 };
 
