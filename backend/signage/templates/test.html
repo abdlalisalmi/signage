@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<title>Browser Test Page</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f4f4f4;
+			color: #333;
+			text-align: center;
+			padding: 50px;
+		}
+
+		.container {
+			background-color: #fff;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			max-width: 600px;
+			margin: auto;
+		}
+
+		.button {
+			display: inline-block;
+			padding: 10px 20px;
+			margin: 20px 0;
+			background-color: #007BFF;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 16px;
+		}
+
+		.button:hover {
+			background-color: #0056b3;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>Browser Test Page</h1>
+		<p>This is a simple page to test basic HTML, CSS, and JavaScript capabilities.</p>
+		<p id="datetime"></p>
+		<button class="button" onclick="showAlert()">Click Me</button>
+		<p id="result"></p>
+		<h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
+	</div>
+
+	<script>
+		// Display the current date and time
+		document.getElementById('datetime').textContent = 'Current Date and Time: ' + new Date().toLocaleString();
+
+		// Function to show an alert and change the text
+		function showAlert() {
+			alert('The button was clicked!');
+			document.getElementById('result').textContent = 'Button clicked at ' + new Date().toLocaleTimeString();
+		}
+	</script>
+</body>
+
+</html>

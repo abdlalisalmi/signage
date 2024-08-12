@@ -12,6 +12,13 @@ from .serializers import (
 )
 
 
+class TestView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        return render(request, "test.html", {})
+
+
 class ContentPreviw(viewsets.ViewSet):
     """
     A simple ViewSet for listing or retrieving screens.
