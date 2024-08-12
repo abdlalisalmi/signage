@@ -16,25 +16,25 @@ services:
           - ./backend/static:/home/backend/static/
           - ./backend/media:/home/backend/media/
         depends_on:
-          - frontend
+          # - frontend
           - backend
         networks:
           - front-network
     
-    frontend: 
-        restart: unless-stopped
-        container_name: "signage_frontend"
-        build: 
-            context: .
-            dockerfile: ./deployment/frontend/Dockerfile
-        ports:
-            - 3000
-        depends_on:
-            - backend
-        links:
-            - backend
-        networks:
-            - front-network
+    # frontend: 
+    #     restart: unless-stopped
+    #     container_name: "signage_frontend"
+    #     build: 
+    #         context: .
+    #         dockerfile: ./deployment/frontend/Dockerfile
+    #     ports:
+    #         - 3000
+    #     depends_on:
+    #         - backend
+    #     links:
+    #         - backend
+    #     networks:
+    #         - front-network
 
     backend:
         restart: unless-stopped
