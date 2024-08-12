@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "corsheaders",  # Django CORS headers
     # Local apps
     "signage",
+    "frontend",
 ]
 
 MIDDLEWARE = [

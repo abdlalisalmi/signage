@@ -1,0 +1,14 @@
+ version: '2'
+
+ services:
+    backend:
+        container_name: backend_dev
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8000:8000"
+        volumes:
+            - ../backend:/app
+        entrypoint: sh /app/entrypoint.dev.sh
+        env_file: .env

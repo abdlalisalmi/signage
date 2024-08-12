@@ -9,6 +9,7 @@ API_PREFIX = f"api/{API_VERSION}/"
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(f"{API_PREFIX}", include("signage.urls")),
+    path("", include("frontend.urls")),
 ]
 
 if settings.DEBUG:

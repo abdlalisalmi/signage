@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Signage - Something Went Wrong
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+	.circle-container {
+		position: relative;
+		width: 120px;
+		height: 120px;
+		margin: 0 auto;
+	}
+
+	.circle-background {
+		fill: none;
+		stroke: #f66f6f;
+		stroke-width: 8;
+	}
+
+	.circle-foreground {
+		fill: none;
+		stroke: #dc3e3e;
+		stroke-width: 8;
+		stroke-dasharray: 314;
+		/* circumference of the circle (2πr) */
+		stroke-dashoffset: 0;
+		transition: stroke-dashoffset 1s linear;
+		transform: rotate(-90deg);
+		transform-origin: center;
+	}
+
+	.countdown-number {
+		font-size: 24px;
+		font-weight: some-bold;
+		color: #dc3e3e;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<main class="bg-red-100 flex items-center justify-center h-screen">
+	<div class="text-center">
+		<h1 class="text-3xl font-bold text-red-600">Something Went Wrong!</h1>
+		<p class="text-lg text-red-400">
+			The page will reload automatically in
+		</p>
+		<div class="circle-container mt-4">
+			<svg width="120" height="120">
+				<circle cx="60" cy="60" r="50" class="circle-background" />
+				<circle cx="60" cy="60" r="50" class="circle-foreground" id="circle-foreground" />
+				<p class="countdown-number" id="countdown-svg-number">10</p>
+			</svg>
+		</div>
+	</div>
+</main>
+{% endblock %}
+
+{% block extrascript %}
+{{ block.super }}
+<script>
+	let countdown = 10;
+	const countdownSvgNumberElement = document.getElementById('countdown-svg-number');
+	const circleForegroundElement = document.getElementById('circle-foreground');
+
+	const circumference = 2 * Math.PI * 50; // 2πr, where r=50 (the radius of the circle)
+	const interval = setInterval(() => {
+		countdown--;
+		const offset = (circumference / 10) * countdown;
+		circleForegroundElement.style.strokeDashoffset = offset;
+		countdownSvgNumberElement.textContent = countdown;
+		if (countdown === 0) {
+			clearInterval(interval);
+			location.reload();
+		}
+	}, 1000);
+</script>
+{% endblock %}

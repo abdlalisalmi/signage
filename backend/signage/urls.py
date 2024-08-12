@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import ScreensList, ContentPreviw, TestView
+from .views import ScreensList, ContentPreviw
+
+app_name = "signage"
 
 urlpatterns = [
-    path(
-        "test/", TestView.as_view(), name="test"
-    ),  # This is the only path that is not used in the frontend
     path("screens/", ScreensList.as_view({"get": "list"}), name="screens_list"),
     path(
         "screens/<int:pk>/",
