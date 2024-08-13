@@ -8,7 +8,7 @@ urlpatterns = [
     path(
         "screens/<int:pk>/",
         ScreensList.as_view({"get": "retrieve"}),
-        name="screens_detail",
+        name="screen_detail",
     ),
     path(
         "contents/<int:pk>/preview/",

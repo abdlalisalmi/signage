@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Signage - Something Went Wrong
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+	.circle-container {
+		position: relative;
+		width: 120px;
+		height: 120px;
+		margin: 0 auto;
+		margin-top: 1rem;
+	}
+
+	.circle-background {
+		fill: none;
+		stroke: rgb(125 211 252);
+		stroke-width: 8;
+	}
+
+	.circle-foreground {
+		fill: none;
+		stroke: rgb(56 189 248);
+		stroke-width: 8;
+		stroke-dasharray: 314;
+		/* circumference of the circle (2πr) */
+		stroke-dashoffset: 0;
+		transition: stroke-dashoffset 1s linear;
+		transform: rotate(-90deg);
+		transform-origin: center;
+	}
+
+	.countdown-number {
+		font-size: 24px;
+		font-weight: some-bold;
+		color: rgb(56 189 248);
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<main style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+	<div
+		style="background-color: #F3F4F6; border-radius: 0.375rem; width: 100%; max-width: 600px; padding: 3rem; border-radius: 1rem;">
+		<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; ">
+			<svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16" stroke="#1C274C"
+					stroke-width="1.5" stroke-linecap="round" />
+				<ellipse cx="15" cy="10.5" rx="1" ry="1.5" fill="#1C274C" />
+				<ellipse cx="9" cy="10.5" rx="1" ry="1.5" fill="#1C274C" />
+				<path opacity="0.5" d="M22 14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22"
+					stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" />
+				<path opacity="0.5" d="M10 22C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14"
+					stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" />
+				<path opacity="0.5" d="M10 2C6.22876 2 4.34315 2 3.17157 3.17157C2 4.34315 2 6.22876 2 10"
+					stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" />
+				<path opacity="0.5" d="M14 2C17.7712 2 19.6569 2 20.8284 3.17157C22 4.34315 22 6.22876 22 10"
+					stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" />
+			</svg>
+			<p style="color: #6B7280; font-size: 0.875rem; text-align: center;">No contents available for this screen,
+				<br />rechecking in
+		</div>
+		<div class="circle-container">
+			<svg width="120" height="120">
+				<circle cx="60" cy="60" r="50" class="circle-background" />
+				<circle cx="60" cy="60" r="50" class="circle-foreground" id="circle-foreground" />
+				<p class="countdown-number" id="countdown-svg-number">30</p>
+			</svg>
+		</div>
+	</div>
+</main>
+{% endblock %}
+
+{% block extrascript %}
+{{ block.super }}
+<script>
+	let countdown = 30;
+	const countdownSvgNumberElement = document.getElementById('countdown-svg-number');
+	const circleForegroundElement = document.getElementById('circle-foreground');
+
+	const circumference = 2 * Math.PI * 50; // 2πr, where r=50 (the radius of the circle)
+	const interval = setInterval(() => {
+		countdown--;
+		const offset = (circumference / 30) * countdown;
+		circleForegroundElement.style.strokeDashoffset = offset;
+		countdownSvgNumberElement.textContent = countdown;
+		if (countdown === 0) {
+			clearInterval(interval);
+			location.reload();
+		}
+	}, 3000);
+</script>
+{% endblock %}
