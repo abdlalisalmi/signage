@@ -1,67 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-	<title>Browser Test Page</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f4f4f4;
-			color: #333;
-			text-align: center;
-			padding: 50px;
+
+{% block extrastyle %}
+<style>
+	.container {
+		/* width: 100%; */
+		min-height: calc(100vh - 4rem);
+
+	}
+
+	.wrapp {
+		/* width: 100%; */
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		margin-top: 0.5rem;
+		margin-bottom: 4rem;
+		padding: 1rem;
+	}
+
+	.header {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 2rem 0;
+	}
+
+	.screens-list {
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 2rem;
+		margin-top: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	@media screen and (max-width: 768px) {
+		.screens-list {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media screen and (max-width: 480px) {
+		.screens-list {
+			grid-template-columns: repeat(1, 1fr);
 		}
 
-		.container {
-			background-color: #fff;
-			padding: 20px;
-			border-radius: 8px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-			max-width: 600px;
-			margin: auto;
-		}
+	}
+</style>
+{% endblock %}
 
-		.button {
-			display: inline-block;
-			padding: 10px 20px;
-			margin: 20px 0;
-			background-color: #007BFF;
-			color: #fff;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			font-size: 16px;
-		}
 
-		.button:hover {
-			background-color: #0056b3;
-		}
-	</style>
-</head>
 
-<body>
-	<div class="container">
-		<h1>Browser Test Page</h1>
-		<p>This is a simple page to test basic HTML, CSS, and JavaScript capabilities.</p>
-		<p id="datetime"></p>
-		<button class="button" onclick="showAlert()">Click Me</button>
-		<p id="result"></p>
-		<h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
-	</div>
+{% block body %}
+<main class="container">
+	{% include 'home/hero.html' %}
 
-	<script>
-		// Display the current date and time
-		document.getElementById('datetime').textContent = 'Current Date and Time: ' + new Date().toLocaleString();
+	<section class="wrapp">
+		<div class="header">
+			<h1 style="text-align: center; font-weight: 600; font-size: 1.25rem; color: #38bdf8;">
+				Explore all Screens
+			</h1>
+			<svg aria-hidden="true" viewBox="0 0 418 42" preserveAspectRatio="none"
+				style="width: 220px; margin-top: 0.5rem;" fill="#0ea5e9">
+				<path
+					d="M203.371.916c-26.013-2.078-76.686 1.963-124.73 9.946L67.3 12.749C35.421 18.062 18.2 21.766 6.004 25.934 1.244 27.561.828 27.778.874 28.61c.07 1.214.828 1.121 9.595-1.176 9.072-2.377 17.15-3.92 39.246-7.496C123.565 7.986 157.869 4.492 195.942 5.046c7.461.108 19.25 1.696 19.17 2.582-.107 1.183-7.874 4.31-25.75 10.366-21.992 7.45-35.43 12.534-36.701 13.884-2.173 2.308-.202 4.407 4.442 4.734 2.654.187 3.263.157 15.593-.78 35.401-2.686 57.944-3.488 88.365-3.143 46.327.526 75.721 2.23 130.788 7.584 19.787 1.924 20.814 1.98 24.557 1.332l.066-.011c1.201-.203 1.53-1.825.399-2.335-2.911-1.31-4.893-1.604-22.048-3.261-57.509-5.556-87.871-7.36-132.059-7.842-23.239-.254-33.617-.116-50.627.674-11.629.54-42.371 2.494-46.696 2.967-2.359.259 8.133-3.625 26.504-9.81 23.239-7.825 27.934-10.149 28.304-14.005.417-4.348-3.529-6-16.878-7.066Z">
+				</path>
+			</svg>
+		</div>
 
-		// Function to show an alert and change the text
-		function showAlert() {
-			alert('The button was clicked!');
-			document.getElementById('result').textContent = 'Button clicked at ' + new Date().toLocaleTimeString();
-		}
-	</script>
-</body>
+		<div class="screens-list">
+			{% for screen in screens %}
+			<a href="{% url 'signage:screens_detail' screen.id %}"
+				style="display: flex; justify-content: center; align-items: center; cursor: pointer; width: 100%; border-radius: 1rem; transition: all 0.3s ease-in-out; box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);">
+				<div style="position: relative; width: 100%; height: 12rem; border-radius: 1rem;">
+					<div
+						style="position: absolute; inset: 0; border: 2px solid #E5E7EB; border-radius: 1rem; backdrop-filter: blur(10px); z-index: 10;">
+						<div
+							style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+							<h1 style="font-size: 1rem; font-weight: 600; color: #4B5563; text-transform: capitalize;">
+								{{screen.name }}</h1>
+						</div>
+					</div>
+					<div
+						style="width: 100%; background-image: url('/img/hero-bg.png'); background-position: left; background-repeat: no-repeat; position: absolute; height: 100%; z-index: 1; border-radius: 1rem;">
+					</div>
+					<div
+						style="position: absolute; bottom: -0.5rem; left: 50%; transform: translateX(-50%); background-color: #6B7280; width: 4rem; height: 0.5rem; border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem;">
+					</div>
+				</div>
+			</a>
+			{% endfor %}
+		</div>
 
-</html>
+		<div style="width: 100%; display: flex; justify-content: center;">
+			{% if screens|length == 0 %}
+			<div
+				style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background-color: #F3F4F6; padding-left: 1rem; padding-right: 1rem; padding-top: 0.5rem; padding-bottom: 0.5rem; border-radius: 0.375rem;">
+				<TbFaceId style="width: 2rem; height: 2rem; color: #6B7280;" />
+				<p style="color: #6B7280; font-size: 0.875rem;">No active screens available</p>
+			</div>
+			{% endif %}
+		</div>
+	</section>
+
+
+	<!-- <h1 class="text-2xl font-bold mb-4">Screens List</h1>
+	<ul class="list-disc pl-5">
+		{% for screen in screens %}
+		<li class="mb-2">
+			<h2 class="text-xl font-semibold">{{ screen.name }}</h2>
+			<p class="text-gray-600">ID: {{ screen.id }}</p>
+			<p class="text-gray-600">Description: {{ screen.description|default:"No description available" }}</p>
+			<p class="text-gray-600">Status: {{ screen.is_active|yesno:"Active,Inactive" }}</p>
+		</li>
+		{% endfor %}
+	</ul> -->
+
+</main>
+{% include 'components/footer.html' %}
+{% endblock %}

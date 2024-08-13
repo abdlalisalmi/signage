@@ -12,13 +12,9 @@ class HomePageView(APIView):
         client = APIClient()
         response = client.get(url)
         # Check if the request was successful
-        return render(request, "errors/error.html")
-        # if response.status_code == 200:
-        #     screens_data = response.data
-        # else:
-        #     screens_data = []
 
-        # # You can now use the screens_data in your response or further processing
-        # return Response({"screens_data": screens_data})
+        if not response.status_code == 200:
+            return render(request, "errors/error.html")
+        screens_data = response.data
 
-        return render(request, "index.html")
+        return render(request, "index.html", {"screens": screens_data})
