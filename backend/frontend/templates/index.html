@@ -29,24 +29,40 @@
 
 	.screens-list {
 		width: 100%;
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
 		gap: 3rem;
 		margin-top: 1rem;
 		margin-bottom: 1rem;
 	}
 
+	.screens-list>* {
+		flex: 1 1 calc(25% - 3rem);
+		/* For older browsers, this calculates the width based on the number of columns (4) minus the gap */
+		max-width: calc(25% - 3rem);
+	}
+
 	@media screen and (max-width: 768px) {
 		.screens-list {
-			grid-template-columns: repeat(2, 1fr);
+			justify-content: space-around;
+		}
+
+		.screens-list>* {
+			flex: 1 1 calc(50% - 3rem);
+			max-width: calc(50% - 3rem);
 		}
 	}
 
 	@media screen and (max-width: 480px) {
 		.screens-list {
-			grid-template-columns: repeat(1, 1fr);
+			justify-content: center;
 		}
 
+		.screens-list>* {
+			flex: 1 1 calc(100% - 3rem);
+			max-width: calc(100% - 3rem);
+		}
 	}
 </style>
 {% endblock %}
