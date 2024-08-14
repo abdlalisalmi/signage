@@ -33,6 +33,4 @@ class ScreenDetailView(APIView):
             return render(request, "errors/error.html")
         screen_data = response.data
 
-        print(screen_data, flush=True)
-
         return render(request, "screens/screen_detail.html", {"screen": screen_data})

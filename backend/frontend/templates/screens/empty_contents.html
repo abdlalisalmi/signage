@@ -16,30 +16,34 @@ Signage - Something Went Wrong
 
 	.circle-background {
 		fill: none;
-		stroke: rgb(125 211 252);
+		stroke: rgb(125, 211, 252);
 		stroke-width: 8;
 	}
 
 	.circle-foreground {
 		fill: none;
-		stroke: rgb(56 189 248);
+		stroke: rgb(56, 189, 248);
 		stroke-width: 8;
 		stroke-dasharray: 314;
-		/* circumference of the circle (2πr) */
 		stroke-dashoffset: 0;
 		transition: stroke-dashoffset 1s linear;
+		transform-origin: center center;
+		-webkit-transform-origin: center center;
 		transform: rotate(-90deg);
-		transform-origin: center;
+		-webkit-transform: rotate(-90deg);
+		/* Instead of using transform here, we'll use the SVG transform attribute */
 	}
 
 	.countdown-number {
 		font-size: 24px;
-		font-weight: some-bold;
-		color: rgb(56 189 248);
+		font-weight: bold;
+		/* Fixed 'font-weight' value */
+		color: rgb(56, 189, 248);
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
+		-webkit-transform: translate(-50%, -50%);
 	}
 </style>
 {% endblock %}
@@ -94,6 +98,6 @@ Signage - Something Went Wrong
 			clearInterval(interval);
 			location.reload();
 		}
-	}, 3000);
+	}, countdown * 100);
 </script>
 {% endblock %}
