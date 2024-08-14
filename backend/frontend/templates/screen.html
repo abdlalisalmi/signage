@@ -1,0 +1,9 @@
+{% if screen.contents|length == 0 %}
+
+{% include 'contents/empty_contents.html' %}
+
+{% else %}
+
+{% include 'contents/contents_player.html' with contents=screen.contents %}
+
+{% endif %}
