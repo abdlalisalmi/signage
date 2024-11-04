@@ -7,12 +7,12 @@ services:
         restart: unless-stopped
         image: nginx:1.23.3
         ports:
-          - 81:81
-          # - 80:80
+          # - 81:81
+          - 80:80
           # - 443:443
         volumes:
           - ./deployment/nginx:/etc/nginx/conf.d
-          - /etc/ssl:/etc/ssl
+          # - /etc/ssl:/etc/ssl
           - ./backend/static:/home/backend/static/
           - ./backend/media:/home/backend/media/
         depends_on:
