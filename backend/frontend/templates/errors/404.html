@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  404 - Page Not Found
+{% endblock %}
+
+{% block extrastyle %}
+  <style>
+    .circle-container {
+      position: relative;
+      display: inline-block;
+      width: 120px;
+      height: 120px;
+    }
+    .circle-background,
+    .circle-foreground {
+      fill: none;
+      stroke-width: 10;
+    }
+    .circle-background {
+      stroke: #f8d7da;
+    }
+    .circle-foreground {
+      stroke: #f44336;
+      stroke-dasharray: 314;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .countdown-number {
+      font-size: 2rem;
+      font-weight: bold;
+      fill: #f44336;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <main class="bg-red-100 flex items-center justify-center h-screen">
+    <div class="text-center">
+      <h1 class="text-3xl font-bold text-red-600">404 - Page Not Found</h1>
+      <p class="text-lg text-red-400">The page you are looking for does not exist.</p>
+      <p class="text-lg text-red-400">You will be redirected to the homepage in</p>
+      <div class="circle-container mt-4">
+        <svg width="120" height="120">
+          <circle cx="60" cy="60" r="50" class="circle-background" />
+          <circle cx="60" cy="60" r="50" class="circle-foreground" id="circle-foreground" />
+          <text x="60" y="70" class="countdown-number" id="countdown-svg-number">5</text>
+        </svg>
+      </div>
+    </div>
+  </main>
+{% endblock %}
+
+{% block extrascript %}
+  {{ block.super }}
+  <script>
+    let countdown = 10
+    const countdownNumber = document.getElementById('countdown-svg-number')
+    const circleForeground = document.getElementById('circle-foreground')
+    const totalDashArray = 314 // approximate circumference of the circle
+    
+    function updateCountdown() {
+      countdown--
+      countdownNumber.textContent = countdown
+      circleForeground.style.strokeDashoffset = totalDashArray * (countdown / 5)
+    
+      if (countdown <= 0) {
+        window.location.href = '/'
+      }
+    }
+    
+    // Run the countdown every 1 second
+    setInterval(updateCountdown, 500)
+  </script>
+{% endblock %}

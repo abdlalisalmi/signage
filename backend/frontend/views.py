@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
+from django.http import Http404
 from rest_framework.views import APIView
 from signage.models import Screen, Content
 from signage.serializers import (
@@ -6,6 +7,10 @@ from signage.serializers import (
     ScreenDetailSerializer,
     ContentDetailSerializer,
 )
+
+
+def handler404(request, exception):
+    return render(request, "errors/404.html", status=404)
 
 
 class HomePageView(APIView):
@@ -17,6 +22,9 @@ class HomePageView(APIView):
 
 class ScreenDetailView(APIView):
     def get(self, request, pk):
-        screen = get_object_or_404(Screen, pk=pk)
+        try:
+            screen = Screen.objects.get(pk=pk)
+        except Screen.DoesNotExist:
+            return render(request, "errors/404.html", status=404)
         screen_data = ScreenDetailSerializer(screen).data
         return render(request, "screen.html", {"screen": screen_data})
