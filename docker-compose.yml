@@ -48,7 +48,7 @@ services:
             - ./deployment/backend/entrypoint.sh:/app/entrypoint.sh
             - /var/log/signage:/var/log/signage # for logging
         env_file:
-            - /srv/config/supervisor/.env
+            - /srv/config/signage/.env
         ports:
             - 8000
         depends_on:
@@ -64,7 +64,7 @@ services:
         volumes:
             - database:/var/lib/postgresql/data
         env_file:
-            - /srv/config/supervisor/.env
+            - /srv/config/signage/.env
         networks:
             - back-network
 
