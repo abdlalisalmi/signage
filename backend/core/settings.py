@@ -134,6 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_DIRS = [BASE_DIR / "static", BASE_DIR / "frontend" / "static"]
 STATIC_ROOT = BASE_DIR / "static"
 
 # MEDIA_URL = "media/" if not DEBUG else "http://localhost:8000/media/"

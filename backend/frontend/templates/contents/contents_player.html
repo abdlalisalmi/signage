@@ -1,53 +1,28 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block extrastyle %}
-<style>
-	.container {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 100%;
-		height: 100vh;
-	}
-
-	.content-items {
-		width: 100%;
-		height: 100%;
-	}
-
-	.content-item {
-		width: 100%;
-		height: 100%;
-		display: none;
-	}
-
-	img,
-	video,
-	iframe {
-		width: 100%;
-		height: 100%;
-		max-height: 100vh;
-		object-fit: cover;
-		padding: 0;
-	}
-
-	.text {
-		width: calc(100% - 2rem);
-		height: calc(100% - 2rem);
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		font-size: 2rem;
-		padding: 1rem;
-	}
-</style>
+{% block stylesheet %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/counter.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/contents.css' %}">
 {% endblock %}
 
 {% block body %}
 <main class="container">
+
+	<div style="position: absolute; bottom: 1rem; left: 1rem;" id="indexing">
+		--/--
+	</div>
+	<div class="circle-container" style="position: absolute; bottom: 0; right: 0;">
+		<svg width="120" height="120">
+			<circle cx="60" cy="60" r="50" class="circle-background" />
+			<circle cx="60" cy="60" r="50" class="circle-foreground" id="circle-foreground" />
+			<p class="countdown-number" id="countdown-svg-number">--</p>
+		</svg>
+	</div>
+
 	<section class="content-items">
 		{% for content in contents %}
-		<div id="content-{{ forloop.counter }}" class="content-item">
+		<div id="content-{{ forloop.counter }}" data-duration="{{content.duration}}" class="content-item">
 			{% if content.type == "embed" %}
 			<iframe src="{{ content.url }}" frameborder="0" allowfullscreen></iframe>
 
@@ -58,7 +33,10 @@
 			<img src="{{ content.file}}" />
 
 			{% elif content.type == "video" %}
-			<video src="{{ content.file}}" controls autoplay></video>
+			<video autoplay>
+				<source src="{{ content.file }}" type="video/mp4">
+				</source>
+			</video>
 			{% endif %}
 		</div>
 		{% endfor %}
@@ -72,16 +50,19 @@
 		let contents = document.querySelectorAll('.content-item');
 		let durations = [
 			{% for content in contents %}
-                {{ content.duration }},
+                    {{ content.duration }},
 		{% endfor %}
-        ];
+            ];
 	let currentIndex = 0;
+	const contentIndexElement = document.getElementById('indexing');
+	const countdownSvgNumberElement = document.getElementById('countdown-svg-number');
+	const circleForegroundElement = document.getElementById('circle-foreground');
+	const circumference = 2 * Math.PI * 50; // 2πr, where r=50 (the radius of the circle)
 
 	function fadeOut(element, callback) {
 		element.style.opacity = 1;
-
 		(function fade() {
-			if ((element.style.opacity -= 0.05) < 0) {  // Reduced the decrement value for slower fade
+			if ((element.style.opacity -= 0.05) < 0) {
 				element.style.display = "none";
 				if (callback) callback();
 			} else {
@@ -93,43 +74,61 @@
 	function fadeIn(element) {
 		element.style.opacity = 0;
 		element.style.display = "block";
-
 		(function fade() {
-			var val = parseFloat(element.style.opacity);
-			if (!((val += 0.05) > 1)) {  // Reduced the increment value for slower fade
+			let val = parseFloat(element.style.opacity);
+			if (!((val += 0.05) > 1)) {
 				element.style.opacity = val;
 				requestAnimationFrame(fade);
 			}
 		})();
 	}
 
-	function showContent(index) {
-		// Fade out the current content
+	function showNextContent() {
+		console.log("show next content...");
+		// console.log("Index: ", currentIndex);
+		// console.log("Duration: ", durations[currentIndex]);
+		if (currentIndex === contents.length - 1) {
+			window.location.reload();
+		}
 		fadeOut(contents[currentIndex], function () {
-			// Update currentIndex and fade in the next content
-			currentIndex = (index + 1) % contents.length;
+			currentIndex = (currentIndex + 1) % contents.length;
 			fadeIn(contents[currentIndex]);
-
-			// Schedule the next content switch
-			setTimeout(() => {
-				// check if the last content is reached, reload the page
-				if (currentIndex == contents.length - 1) {
-					location.reload();
-				}
-				showContent(currentIndex);
-			}, durations[currentIndex] * 1000);
+			contentIndexElement.textContent = `${currentIndex + 1}/${contents.length}`;
 		});
 	}
 
-	// Show the first content immediately without any delay
+	function updateCountdown(duration) {
+		console.log("update countdown...");
+
+		let countdown = duration;
+		const interval = setInterval(() => {
+			countdown--;
+			const offset = (circumference / duration) * countdown;
+			circleForegroundElement.style.strokeDashoffset = offset;
+			countdownSvgNumberElement.textContent = countdown;
+
+			if (countdown <= 0) {
+				clearInterval(interval);
+				// Start the countdown for the next content
+				updateCountdown(durations[currentIndex]);
+				showNextContent();
+			}
+		}, 1000); // countdown timer updates every second
+	}
+
+	contentIndexElement.textContent = `${currentIndex + 1}/${contents.length}`;
+
+	// // Show the first content immediately
 	contents[currentIndex].style.display = "block";
 	fadeIn(contents[currentIndex]);
 
-	// Start the content loop after the initial content duration
-	setTimeout(() => {
-		showContent(currentIndex);
-	}, durations[currentIndex] * 1000);
-    });
+
+
+	// Start the initial countdown and content switching
+	// console.log(durations[currentIndex]);
+	// updateCountdown(durations[currentIndex]);
+	updateCountdown(durations[currentIndex]);
+        });
 </script>
 
 

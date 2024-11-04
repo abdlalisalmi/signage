@@ -33,4 +33,9 @@ class ScreenDetailView(APIView):
             return render(request, "errors/error.html")
         screen_data = response.data
 
+        # exclude content_type video
+        screen_data["contents"] = [
+            content for content in screen_data["contents"] if content["type"] != "video"
+        ]
+
         return render(request, "screen.html", {"screen": screen_data})
