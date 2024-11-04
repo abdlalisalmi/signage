@@ -34,7 +34,7 @@ do
 done
 
 echo "Creating SuperUser..."
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser(email='$SUPER_USER_EMAIL', password='$SUPER_USER_PASSWORD') if not User.objects.filter(email='$SUPER_USER_EMAIL').exists() else print('$SUPER_USER_EMAIL already exist.')" | python manage.py shell
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser(username='$SUPER_USER_EMAIL', password='$SUPER_USER_PASSWORD') if not User.objects.filter(username='$SUPER_USER_EMAIL').exists() else print('$SUPER_USER_EMAIL already exist.')" | python manage.py shell
 
 
 echo "Starting server..."

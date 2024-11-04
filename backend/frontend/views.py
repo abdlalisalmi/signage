@@ -1,41 +1,22 @@
-from django.shortcuts import render
-from django.urls import reverse
+from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.test import APIClient
+from signage.models import Screen, Content
+from signage.serializers import (
+    ScreenSerializer,
+    ScreenDetailSerializer,
+    ContentDetailSerializer,
+)
 
 
 class HomePageView(APIView):
     def get(self, request):
-        # Reverse the URL of the ScreensList view
-        url = reverse("signage:screens_list")
-        # Make an internal GET request using APIClient
-        client = APIClient()
-        response = client.get(url)
-        # Check if the request was successful
-
-        if not response.status_code == 200:
-            return render(request, "errors/error.html")
-        screens_data = response.data
-
-        return render(request, "index.html", {"screens": screens_data})
+        queryset = Screen.objects.filter(is_active=True)
+        secreens_data = ScreenSerializer(queryset, many=True).data
+        return render(request, "index.html", {"screens": secreens_data})
 
 
 class ScreenDetailView(APIView):
     def get(self, request, pk):
-        # Reverse the URL of the ScreensList view
-        url = reverse("signage:screen_detail", args=[pk])
-        # Make an internal GET request using APIClient
-        client = APIClient()
-        response = client.get(url)
-        # Check if the request was successful
-
-        if not response.status_code == 200:
-            return render(request, "errors/error.html")
-        screen_data = response.data
-
-        # exclude content_type video
-        screen_data["contents"] = [
-            content for content in screen_data["contents"] if content["type"] != "video"
-        ]
-
+        screen = get_object_or_404(Screen, pk=pk)
+        screen_data = ScreenDetailSerializer(screen).data
         return render(request, "screen.html", {"screen": screen_data})
