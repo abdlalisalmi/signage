@@ -80,7 +80,7 @@ class Content(models.Model):
 
     CONTENT_TYPES = (
         ("image", "Image"),
-        # ("video", "Video"),
+        ("video", "Video"),
         ("text", "Text"),
         ("embed", "Embed"),
     )
