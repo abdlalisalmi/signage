@@ -3,6 +3,15 @@ from django.db.models.functions import Lower
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
+
+
+# Create your models here.
+class Profile(User):
+    class Meta:
+        proxy = True
+        verbose_name = "Profile"
+        verbose_name_plural = "Profiles"
 
 
 class Screen(models.Model):

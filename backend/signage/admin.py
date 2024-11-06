@@ -4,8 +4,10 @@ from django.contrib import admin
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.utils import timezone
+from django.shortcuts import redirect
+
 from unfold.admin import ModelAdmin
 from unfold.decorators import display
 from unfold.contrib.forms.widgets import WysiwygWidget
@@ -14,7 +16,7 @@ from unfold.contrib.filters.admin import (
 )
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
-from .models import Screen, Playlist, Content
+from .models import Screen, Playlist, Content, Profile
 
 
 admin.site.unregister(User)
@@ -46,6 +48,38 @@ class UserAdmin(UserAdmin, ModelAdmin):
     # inlines = None
     readonly_fields = ["last_login", "date_joined"]
 
+    fieldsets = (
+        (
+            "Profile Data",
+            {
+                "fields": (
+                    (
+                        "first_name",
+                        "last_name",
+                    ),
+                    ("username", "password"),
+                    # "email",
+                )
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
+        (
+            "Important dates",
+            {"fields": (("last_login", "date_joined"),)},
+        ),
+    )
+
     @display(description="User", header=True)
     def display_header(self, instance: User):
         first_name = instance.first_name.capitalize() if instance.first_name else "."
@@ -61,6 +95,37 @@ class UserAdmin(UserAdmin, ModelAdmin):
     def display_groups(self, instance: User):
         groups = ", ".join([group.name for group in instance.groups.all()])
         return groups if groups else "-"
+
+
+@admin.register(Profile)
+class ProfileAdmin(UserAdmin):
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
+
+    def has_delete_permission(self, request: HttpRequest, obj=None) -> bool:
+        return False
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        extra_context["show_save_and_continue"] = False
+        return super(ProfileAdmin, self).changeform_view(
+            request, object_id, extra_context=extra_context
+        )
+
+    def response_change(self, request, obj):
+        super(ProfileAdmin, self).response_change(request, obj)
+        return HttpResponseRedirect(request.path + "?_continue=1")
+
+    readonly_fields = [
+        "user_permissions",
+        "groups",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "last_login",
+        "date_joined",
+    ]
 
 
 @admin.register(Group)

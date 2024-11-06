@@ -2,50 +2,43 @@
 {% load static %}
 
 {% block stylesheet %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/counter.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'css/contents.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/counter.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/contents.css' %}" />
 {% endblock %}
 
 {% block body %}
-<main class="container">
+  <main class="container">
+    <div style="position: absolute; bottom: 1rem; left: 1rem;" id="indexing">--/--</div>
+    <div class="circle-container" style="position: absolute; bottom: 0; right: 0;">
+      <svg width="120" height="120">
+        <circle cx="60" cy="60" r="50" class="circle-background" />
+        <circle cx="60" cy="60" r="50" class="circle-foreground" id="circle-foreground" />
+        <p class="countdown-number" id="countdown-svg-number">--</p>
+      </svg>
+    </div>
 
-	<div style="position: absolute; bottom: 1rem; left: 1rem;" id="indexing">
-		--/--
-	</div>
-	<div class="circle-container" style="position: absolute; bottom: 0; right: 0;">
-		<svg width="120" height="120">
-			<circle cx="60" cy="60" r="50" class="circle-background" />
-			<circle cx="60" cy="60" r="50" class="circle-foreground" id="circle-foreground" />
-			<p class="countdown-number" id="countdown-svg-number">--</p>
-		</svg>
-	</div>
-
-	<section class="content-items">
-		{% for content in contents %}
-		<div id="content-{{ forloop.counter }}" data-duration="{{content.duration}}" class="content-item">
-			{% if content.type == "embed" %}
-			<iframe src="{{ content.url }}" frameborder="0" allowfullscreen></iframe>
-
-			{% elif content.type == "text" %}
-			<div class="text">{{ content.text | safe }}</div>
-
-			{% elif content.type == "image" %}
-			<img src="{{ content.file}}" />
-
-			{% elif content.type == "video" %}
-			<video autoplay>
-				<source src="{{ content.file }}" type="video/mp4">
-				</source>
-			</video>
-			{% endif %}
-		</div>
-		{% endfor %}
-	</section>
-</main>
+    <section class="content-items">
+      {% for content in contents %}
+        <div id="content-{{ forloop.counter }}" data-duration="{{ content.duration }}" class="content-item">
+          {% if content.type == 'embed' %}
+            <iframe src="{{ content.url }}?rel=0&autoplay=1&controls=0" frameborder="0" allowfullscreen></iframe>
+          {% elif content.type == 'text' %}
+            <div class="text">{{ content.text|safe }}</div>
+          {% elif content.type == 'image' %}
+            <img src="{{ content.file }}" />
+          {% elif content.type == 'video' %}
+            <video autoplay controls loop>
+              <source src="{{ content.file }}" type="video/mp4" />
+            </video>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </section>
+  </main>
 {% endblock %}
 
 {% block extrascript %}
-<script>
+  <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		let contents = document.querySelectorAll('.content-item');
 		let durations = [
@@ -130,6 +123,4 @@
 	updateCountdown(durations[currentIndex]);
         });
 </script>
-
-
 {% endblock %}

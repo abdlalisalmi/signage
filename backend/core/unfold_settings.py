@@ -14,7 +14,7 @@ UNFOLD = {
     # "SITE_ICON": lambda request: "https://res.cloudinary.com/djr3obtg6/image/upload/v1710331091/logo_avd7to.png",
     "SITE_SYMBOL": "cast",  # symbol from icon set
     # "LOGIN": {
-    #     "image": lambda r: "https://i.imgur.com/aIkz2KI.png",
+    #     "image": lambda r: "https://cdn.prod.website-files.com/6224e9989b85a7b6be5526e8/626ab557d92bf4a02ebf724f_digital-signage-trends.png",
     # },
     "COLORS": {
         "primary": {
@@ -43,6 +43,14 @@ UNFOLD = {
                         "link": reverse_lazy("admin:index"),
                         "permission": lambda request: request.user.is_staff,
                     },
+                    {
+                        "title": _("My Profile"),
+                        "icon": "person",
+                        "link": lambda request: reverse_lazy(
+                            "admin:signage_profile_change", args=[request.user.id]
+                        ),
+                        "permission": lambda request: request.user.is_staff,
+                    },
                 ],
             },
             {
@@ -63,20 +71,6 @@ UNFOLD = {
                         "link": reverse_lazy("admin:auth_group_changelist"),
                         "permission": lambda request: has_permission(
                             request, "auth", "group"
-                        ),
-                    },
-                ],
-            },
-            {
-                "title": _("Monitoring"),
-                "separator": True,  # Top border
-                "items": [
-                    {
-                        "title": _("Logs"),
-                        "icon": "monitor_heart",
-                        "link": reverse_lazy("admin:admin_logentry_changelist"),
-                        "permission": lambda request: has_permission(
-                            request, "admin", "logentry"
                         ),
                     },
                 ],
@@ -107,6 +101,20 @@ UNFOLD = {
                         "link": reverse_lazy("admin:signage_content_changelist"),
                         "permission": lambda request: has_permission(
                             request, "signage", "content"
+                        ),
+                    },
+                ],
+            },
+            {
+                "title": _("Monitoring"),
+                "separator": True,  # Top border
+                "items": [
+                    {
+                        "title": _("Logs"),
+                        "icon": "monitor_heart",
+                        "link": reverse_lazy("admin:admin_logentry_changelist"),
+                        "permission": lambda request: has_permission(
+                            request, "admin", "logentry"
                         ),
                     },
                 ],
