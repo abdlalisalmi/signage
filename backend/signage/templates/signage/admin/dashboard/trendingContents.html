@@ -1,0 +1,32 @@
+{% load i18n log %}
+{% load i18n unfold %}
+
+{% get_admin_log 3 as admin_log for_user user %}
+{% trans 'The most trending Contents on Signage' as title %}
+
+<div id="content-related" class="lg:w-4/12 shadow-md">
+  <div class="border-gray-100 border-2">
+    <div class="flex flex-row items-center justify-between mb-4 bg-gray-50 rounded-md p-3 dark:bg-gray-800">
+      <div class="flex flex-row items-center justify-center">
+        <span class="material-symbols-outlined mr-2">trending_up</span>
+        <h2 class="font-semibold text-gray-700 text-sm dark:text-gray-200">{{ title }}</h2>
+      </div>
+
+      {% if perms.signage.add_content %}
+        {% component 'unfold/components/button.html' with href='/admin/signage/content/add/' variant='default' %}
+        <div class="flex items-center">
+          <span class="material-symbols-outlined mr-2">add</span>
+          {% trans 'Add Contens' %}
+        </div>
+        {% endcomponent %}
+      {% endif %}
+    </div>
+
+    {% component 'unfold/components/flex.html' with col=1 class='gap-5' %}
+    {% for metric in progress %}
+      {% component 'unfold/components/progress.html' with title=metric.title description=metric.value value=metric.value class='bg-gray-50 dark:bg-gray-800' %}
+      {% endcomponent %}
+    {% endfor %}
+    {% endcomponent %}
+  </div>
+</div>

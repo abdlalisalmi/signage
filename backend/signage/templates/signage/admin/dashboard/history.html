@@ -1,0 +1,49 @@
+{% load i18n log %} 
+
+{% get_admin_log 3 as admin_log for_user user %} 
+
+{% trans 'My recent actions' as title %}
+
+<div id="content-related" class="lg:w-4/12">
+  <div class="module" id="recent-actions-module">
+    <div
+      class="flex flex-row items-center justify-between mb-4 bg-gray-50 rounded-md p-3 dark:bg-gray-800 h-16"
+    >
+      <div class="flex flex-row items-center justify-center">
+        <span class="material-symbols-outlined mr-2">history</span>
+        <h2 class="font-semibold text-gray-700 text-sm dark:text-gray-200">
+          {{ title }}
+        </h2>
+      </div>
+    </div>
+
+    {% if admin_log %}
+    <ul class="actionlist bg-gray-50 rounded-md p-3 dark:bg-gray-800">
+      {% for entry in admin_log %}
+      <li
+        class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %} bg-white mb-4 p-3 rounded-md shadow-sm last:mb-0 dark:bg-gray-900"
+      >
+        <div
+          class="border-gray-100 border-t flex pt-3 text-gray-500 text-sm dark:border-gray-800 dark:text-gray-400"
+        >
+          <div>
+            {% if entry.content_type %} {% filter capfirst %} 
+            {{ entry.content_type.name }} - {{ entry.object_repr|truncatechars:25 }}
+            {% endfilter %} {% else %} {% translate 'Unknown content' %}
+			{%endif %}
+          </div>
+
+          <div class="ml-auto">{{ entry.action_time }}</div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="bg-gray-50 rounded-md p-3 dark:bg-gray-800">
+      <p class="text-gray-500 text-sm dark:text-gray-400">
+        {% translate 'No recent actions found.' %}
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</div>

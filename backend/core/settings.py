@@ -38,13 +38,19 @@ if not DEBUG:
 
 INSTALLED_APPS = [
     "unfold",  # Unfold is a new theme for Django Admin
+    "unfold.contrib.filters",  # optional, if special filters are needed
     "unfold.contrib.forms",  # Unfold forms
+    # "unfold.contrib.inlines",  # optional, if special inlines are needed
+    # "unfold.contrib.import_export",  # optional, if django-import-export package is used
+    # "unfold.contrib.guardian",  # optional, if django-guardian package is used
+    # "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
     # Third-party apps
     "rest_framework",  # Django REST framework
     "corsheaders",  # Django CORS headers
