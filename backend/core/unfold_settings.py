@@ -16,6 +16,7 @@ UNFOLD = {
     # "LOGIN": {
     #     "image": lambda r: "https://cdn.prod.website-files.com/6224e9989b85a7b6be5526e8/626ab557d92bf4a02ebf724f_digital-signage-trends.png",
     # },
+    "DASHBOARD_CALLBACK": "signage.views.dashboard_callback",
     "COLORS": {
         "primary": {
             "50": "236 254 255",

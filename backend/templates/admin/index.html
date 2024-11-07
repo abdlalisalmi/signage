@@ -1,0 +1,71 @@
+{% extends 'unfold/layouts/base_simple.html' %}
+{% load i18n unfold %}
+
+{% load cache humanize i18n %}
+
+{% block breadcrumbs %}
+
+{% endblock %}
+
+{% block title %}
+  {% trans 'Dashboard' %}| {{ site_title|default:_('Django site admin') }}
+{% endblock %}
+
+{% block branding %}
+  <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+{% endblock %}
+
+{% block content %}
+  {% include 'unfold/helpers/messages.html' %}
+  {% component 'unfold/components/container.html' %}
+
+  {% comment %}Platform head message{% endcomment %}
+
+  <div class="bg-gray-50 gap-4 mb-8 p-6 rounded dark:bg-white/[.02] dark:border-gray-700 flex items-center justify-between">
+    <div>
+      <h2 class="block font-semibold text-font-important-light text-base dark:text-font-important-dark">{% trans 'Platform Statistics Overview' %}</h2>
+
+      <p class="leading-relaxed mt-2">
+        {% trans "On the dashboard page, you'll have access to platform statistics, providing an overview of key metrics and insights." %}
+      </p>
+    </div>
+
+    <!-- Smaller SVG positioned to the right -->
+    <svg width="60px" height="60px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="ml-4 md:hidden">
+      <path d="M4 10V7C4 6.44772 4.44772 6 5 6H19C19.5523 6 20 6.44772 20 7V17C20 17.5523 19.5523 18 19 18H12M6 18C6 16.8954 5.10457 16 4 16M8 18C8 15.7909 6.20914 14 4 14M4 12C7.31371 12 10 14.6863 10 18" stroke="#464455" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+
+  {% comment %}Platform KPIs{% endcomment %}
+
+  {% component 'unfold/components/flex.html' with class='gap-8 mb-8 flex-col lg:flex-row' %}
+  {% for stats in kpi %}
+    {% trans 'All time' as label %}
+    {% component 'unfold/components/card.html' with class='lg:w-1/3' label=label footer=stats.footer %}
+    {% component 'unfold/components/text.html' %}
+    {{ stats.title }}
+    {% endcomponent %}
+
+    {% component 'unfold/components/title.html' %}
+    {{ stats.metric }}
+    {% endcomponent %}
+    {% endcomponent %}
+  {% endfor %}
+  {% endcomponent %}
+
+  {% comment %}Contents statistics{% endcomment %}
+
+  {% component 'unfold/components/flex.html' with class='gap-8 mb-8 flex-col lg:flex-row' %}
+
+  {% component 'unfold/components/flex.html' with class='lg:w-2/3' col=1 %}
+  {% include 'signage/admin/dashboard/trendingContents.html' %}
+  {% endcomponent %}
+
+  {% component 'unfold/components/flex.html' with class='lg:w-1/3' col=1 %}
+  {% include 'signage/admin/dashboard/history.html' %}
+  {% endcomponent %}
+
+  {% endcomponent %}
+
+  {% endcomponent %}
+{% endblock %}
