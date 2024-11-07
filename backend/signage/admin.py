@@ -106,6 +106,11 @@ class ProfileAdmin(UserAdmin):
     def has_delete_permission(self, request: HttpRequest, obj=None) -> bool:
         return False
 
+    def has_change_permission(self, request: HttpRequest, obj=None) -> bool:
+        if obj is None:
+            return False
+        return request.user.id == obj.id
+
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         extra_context = extra_context or {}
         extra_context["show_save_and_continue"] = False
