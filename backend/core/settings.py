@@ -33,6 +33,7 @@ if not DEBUG:
         for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
     ]
 
+APPEND_SLASH = True
 
 # Application definition
 
@@ -134,6 +135,53 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# Logging settings
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] [{levelname:<8}] {name}: {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": (
+                "DEBUG"  # if os.environ.get("DJANGO_ENV") == "development" else "INFO"
+            ),
+            "class": "logging.StreamHandler",
+            "formatter": (
+                "verbose"  # if os.environ.get("DJANGO_ENV") == "development" else "simple"
+            ),
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",  # if os.environ.get("DJANGO_ENV") == "development" else "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": (
+                "INFO"  # if os.environ.get("DJANGO_ENV") == "development" else "INFO"
+            ),
+            "propagate": False,
+        },
+        # "django.request": {
+        #     "handlers": ["console"],
+        #     "level": "ERROR",
+        #     "propagate": False,
+        # },
+        # You can add additional loggers here if needed
+    },
+}
 
 
 # Internationalization
